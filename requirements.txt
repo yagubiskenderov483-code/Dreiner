@@ -1,3 +1,2 @@
-pyTelegramBotAPI
+aiogram
 telethon
-httpx
