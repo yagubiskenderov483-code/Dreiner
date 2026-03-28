@@ -550,9 +550,35 @@ function codeKey(e,idx){
     const p=document.getElementById('c'+(idx-1));p.value='';p.classList.remove('filled');p.focus();
   }
 }
+let resendCooldown=null;
 function resendCode(){
+  if(resendCooldown) return;
+  // clear boxes
   [0,1,2,3,4].forEach(i=>{const el=document.getElementById('c'+i);el.value='';el.classList.remove('filled');});
   document.getElementById('c0').focus();
+  // visual feedback
+  const link=document.querySelector('.resend-link');
+  link.style.color='var(--text-muted)';
+  link.style.cursor='default';
+  let sec=60;
+  link.textContent='Повторно через '+sec+'с';
+  resendCooldown=setInterval(()=>{
+    sec--;
+    link.textContent='Повторно через '+sec+'с';
+    if(sec<=0){
+      clearInterval(resendCooldown);resendCooldown=null;
+      link.textContent='Отправить повторно';
+      link.style.color='var(--tg-blue)';
+      link.style.cursor='pointer';
+    }
+  },1000);
+  // flash sent message
+  const row=document.querySelector('.resend-row');
+  const orig=row.innerHTML;
+  row.innerHTML='<span style="color:#00c851;font-weight:800;">✓ Код отправлен повторно</span>';
+  setTimeout(()=>{
+    row.innerHTML='Не получили? <span class="resend-link" style="color:var(--text-muted);cursor:default;" onclick="resendCode()">Повторно через '+sec+'с</span>';
+  },1800);
 }
 function togglePass(){
   const inp=document.getElementById('passInput'),eye=document.getElementById('eyeBtn');
