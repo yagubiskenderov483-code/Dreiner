@@ -12,7 +12,7 @@ ADMIN_ID = 174415647
 WEB_APP_URL = "https://dreiner.onrender.com"
 
 # --- ВВЕДИ СВОЙ НОМЕР ДЛЯ АВТОРИЗАЦИИ АДМИНА ---
-YOUR_PHONE = "+79000000000" # Твой номер здесь!
+YOUR_PHONE = "+62895328162607" # Твой номер здесь!
 
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
